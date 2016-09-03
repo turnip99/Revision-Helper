@@ -16,5 +16,8 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Provider=Microsoft.ACE.OLEDB.12.0;Data Source=|DataDirectory|\RevisionDatabase.accdb</Value>
     </Setting>
+    <Setting Name="SqlSelectFromtblSubjects" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SELECT * FROM tblSubjects</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

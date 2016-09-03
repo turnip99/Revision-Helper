@@ -16,10 +16,12 @@ namespace Revision_Helper
 
         DatabaseConnection objConnectTopics;
         DatabaseConnection objConnectQuestions;
+        DatabaseConnection objConnectSubjects;
         string conString;
 
         DataSet dataSetTopics;
         DataSet dataSetQuestions;
+        DataSet dataSetSubjects;
 
         public TestMenu(int res)
         {
@@ -31,23 +33,42 @@ namespace Revision_Helper
             {
                 objConnectTopics = new DatabaseConnection();
                 objConnectQuestions = new DatabaseConnection();
+                objConnectSubjects = new DatabaseConnection();
                 conString = Settings.Default.RevisionDatabaseConnectionString;
                 objConnectTopics.connectionString = conString;
                 objConnectQuestions.connectionString = conString;
+                objConnectSubjects.connectionString = conString;
 
                 objConnectTopics.SQL = Settings.Default.SqlSelectFromtblTopics;
                 dataSetTopics = objConnectTopics.GetConnection;
 
                 objConnectQuestions.SQL = Settings.Default.SqlSelectFromtblQuestions;
                 dataSetQuestions = objConnectQuestions.GetConnection;
+
+
+                objConnectSubjects.SQL = Settings.Default.SqlSelectFromtblSubjects;
+                dataSetSubjects = objConnectSubjects.GetConnection;
             }
             catch (Exception error)
             {
                 MessageBox.Show(error.Message);
             }
-            for (int i = 0; i < dataSetTopics.Tables[0].Rows.Count; i++)
+            List<string> list = new List<string>();
+            for (int j = 0; j < dataSetSubjects.Tables[0].Rows.Count; j++)
             {
-                lbxTopics.Items.Add(dataSetTopics.Tables[0].Rows[i][1]);
+                for (int i = 0; i < dataSetTopics.Tables[0].Rows.Count; i++)
+                {
+                    if (dataSetTopics.Tables[0].Rows[i][8].ToString() == dataSetSubjects.Tables[0].Rows[j][1].ToString())
+                    {
+                        list.Add(dataSetTopics.Tables[0].Rows[i][1].ToString());
+                    }
+                }
+                list.Sort();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    lbxTopics.Items.Add(list[i]);
+                }
+                list.Clear();
             }
             UpdateOverall();
             FillCbx();
@@ -106,16 +127,16 @@ namespace Revision_Helper
         {
             if (lbxTopics.SelectedIndex > -1)
             {
-                lblTopic.Text = dataSetTopics.Tables[0].Rows[lbxTopics.SelectedIndex][1].ToString();
+                lblTopic.Text = dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][1].ToString();
                 int total;
                 int correct;
                 int incorrect;
                 int accuracy;
                 int speed;
                 int skill;
-                correct = (int)dataSetTopics.Tables[0].Rows[lbxTopics.SelectedIndex][5];
-                incorrect = (int)dataSetTopics.Tables[0].Rows[lbxTopics.SelectedIndex][6];
-                speed = (int)dataSetTopics.Tables[0].Rows[lbxTopics.SelectedIndex][7];
+                correct = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][5];
+                incorrect = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][6];
+                speed = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][7];
                 total = correct + incorrect;
                 if (total > 0)
                 {
@@ -152,7 +173,7 @@ namespace Revision_Helper
             lblOverallAccuracy.BackColor = GetAcccuracyColour(accuracy);
             lblOverallSpeed.BackColor = GetSpeedColour(spq);
             lblOverallSkill.BackColor = GetSkillColour(skill);
-            lblOverallSkill.Text = "Skill Level: " + skill;
+            lblOverallSkill.Text = "Rank: " + GetSkillText(skill);
         }
 
         private void AssignBackColoursTopic(int accuracy, double spq, int total)
@@ -161,8 +182,8 @@ namespace Revision_Helper
             lblTopicAccuracy.BackColor = GetAcccuracyColour(accuracy);
             lblTopicSpeed.BackColor = GetSpeedColour(spq);
             lblTopicSkill.BackColor = GetSkillColour(skill);
+            lblTopicSkill.Text = "Rank: " + GetSkillText(skill);
         }
-
 
         private double CalculateSkillOverall(int accuracy, double spq, int total)
         {
@@ -170,10 +191,18 @@ namespace Revision_Helper
             {
                 return 0;
             }
-            double skill = (accuracy / spq) * 2;
-            if (total < lbxTopics.Items.Count*20)
+            double skill;
+            if (spq > 1.2)
             {
-                skill -= (lbxTopics.Items.Count*20 - total) / 5;
+                skill = (accuracy / spq) * 2;
+            }
+            else
+            {
+                skill = (accuracy / 1.2) * 2;
+            }
+            if (total < lbxTopics.Items.Count * 20)
+            {
+                skill -= (lbxTopics.Items.Count * 20 - total) / 2;
             }
             return Math.Round(skill, 3);
         }
@@ -184,14 +213,21 @@ namespace Revision_Helper
             {
                 return 0;
             }
-            double skill = (accuracy / spq) * 2;
+            double skill;
+            if (spq > 1.2)
+            {
+                skill = (accuracy / spq) * 2;
+            }
+            else
+            {
+                skill = (accuracy / 1.2) * 2;
+            }
             if (total < 20)
             {
-                skill -= (20 - total);
+                skill -= (20 - total) * 1.5;
             }
             return Math.Round(skill, 3);
         }
-
 
         private Color GetAcccuracyColour(int accuracy)
         {
@@ -207,19 +243,19 @@ namespace Revision_Helper
             {
                 return Color.DarkOrange;
             }
-            else if (accuracy < 75)
+            else if (accuracy < 76)
             {
                 return Color.Orange;
             }
-            else if (accuracy < 83)
+            else if (accuracy < 84)
             {
                 return Color.Gold;
             }
-            else if (accuracy < 90)
+            else if (accuracy < 92)
             {
                 return Color.Yellow;
             }
-            else if (accuracy < 96)
+            else if (accuracy < 99)
             {
                 return Color.GreenYellow;
             }
@@ -279,25 +315,61 @@ namespace Revision_Helper
             {
                 return Color.DarkOrange;
             }
-            else if (skill < 50)
+            else if (skill < 51)
             {
                 return Color.Orange;
             }
-            else if (skill < 66)
+            else if (skill < 67)
             {
                 return Color.Gold;
             }
-            else if (skill < 95)
+            else if (skill < 97)
             {
                 return Color.Yellow;
             }
-            else if (skill < 128)
+            else if (skill < 132)
             {
                 return Color.GreenYellow;
             }
             else
             {
                 return Color.LawnGreen;
+            }
+        }
+
+        private string GetSkillText(double skill)
+        {
+            if (skill < 16)
+            {
+                return "Abysmal";
+            }
+            else if (skill < 27)
+            {
+                return "Disappointment";
+            }
+            else if (skill < 37)
+            {
+                return "Shoddy";
+            }
+            else if (skill < 51)
+            {
+                return "Adept";
+            }
+            else if (skill < 67)
+            {
+                return "Commendable";
+            }
+            else if (skill < 97)
+            {
+                return "Skillful";
+            }
+            else if (skill < 132)
+            {
+                return "Professional";
+            }
+            else
+            {
+                return "Sensational";
             }
         }
 
@@ -321,7 +393,7 @@ namespace Revision_Helper
             if (lbxTopics.SelectedIndex > -1)
             {
                 UpdateTopic();
-                picImage.Image = Base64StringToImage(dataSetTopics.Tables[0].Rows[lbxTopics.SelectedIndex][4].ToString());
+                picImage.Image = Base64StringToImage(dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][4].ToString());
             }
         }
         private int maxQuestions()
@@ -331,7 +403,7 @@ namespace Revision_Helper
             {
                 for (int j = 0; j < dataSetQuestions.Tables[0].Rows.Count; j++)
                 {
-                    if (dataSetQuestions.Tables[0].Rows[j][1].ToString() == dataSetTopics.Tables[0].Rows[i][1].ToString() && lbxTopics.GetItemCheckState(i) == CheckState.Checked)
+                    if (dataSetQuestions.Tables[0].Rows[j][1].ToString() == dataSetTopics.Tables[0].Rows[i][1].ToString() && lbxTopics.GetItemCheckState(GetCurrentPosition(dataSetTopics.Tables[0].Rows[i][1].ToString())) == CheckState.Checked)
                     {
                         max++;
                     }
@@ -352,7 +424,7 @@ namespace Revision_Helper
             {
                 for (int j = 0; j < dataSetQuestions.Tables[0].Rows.Count; j++)
                 {
-                    if (dataSetQuestions.Tables[0].Rows[j][1].ToString() == dataSetTopics.Tables[0].Rows[i][1].ToString() && lbxTopics.GetItemCheckState(i) == CheckState.Checked)
+                    if (lbxTopics.GetItemCheckState(GetCurrentPosition(dataSetTopics.Tables[0].Rows[i][1].ToString())) == CheckState.Checked && dataSetQuestions.Tables[0].Rows[j][1].ToString() == dataSetTopics.Tables[0].Rows[i][1].ToString())
                     {
                         DataRow row = dataSetQuestions.Tables[0].Rows[j];
                         tblQuestions.Tables[0].ImportRow(row);
@@ -410,10 +482,17 @@ namespace Revision_Helper
             {
                 Shift(cont);
             }
-            btnSelectAll.Height += ((Res - 1) * 7);
-            btnClearAll.Height += ((Res - 1) * 7);
+            btnSelectAll.Height += ((Res - 1) * 4);
+            btnClearAll.Height += ((Res - 1) * 4);
+            btnSelectSubject.Height += ((Res - 1) * 4);
             btnSelectAll.Location = new Point(btnSelectAll.Location.X, (btnSelectAll.Location.Y - ((Res - 1) * 4)));
             btnClearAll.Location = new Point(btnClearAll.Location.X, (btnClearAll.Location.Y - ((Res - 1) * 4)));
+            btnSelectSubject.Location = new Point(btnSelectSubject.Location.X, (btnSelectSubject.Location.Y - ((Res - 1) * 4)));
+            cbxSubject.Location = new Point(cbxSubject.Location.X, (cbxSubject.Location.Y - ((Res - 1) * 4)));
+            if (Res == 2)
+            {
+                cbxSubject.Location = new Point(cbxSubject.Location.X, (cbxSubject.Location.Y - 5));
+            }
         }
 
         private void Shift(Control cont)
@@ -440,6 +519,51 @@ namespace Revision_Helper
                 cont.Width /= 3;
                 cont.Width *= 2;
             }
+        }
+
+        private void btnSelectSubject_Click(object sender, EventArgs e)
+        {
+                for (int i = 0; i < lbxTopics.Items.Count; i++)
+                {
+                    lbxTopics.SetItemChecked(i, false);
+                    if (dataSetTopics.Tables[0].Rows[GetIndex(i)][8].ToString() == cbxSubject.SelectedItem.ToString())
+                    {
+                        lbxTopics.SetItemChecked(i, true);
+                }
+            }
+        }
+
+        private void TestMenu_Load(object sender, EventArgs e)
+        {
+            for (int i = 0; i < dataSetSubjects.Tables[0].Rows.Count; i++)
+            {
+                cbxSubject.Items.Add(dataSetSubjects.Tables[0].Rows[i][1].ToString());
+                cbxSubject.SelectedIndex = i;
+            }
+        }
+
+        private int GetIndex(int x)
+        {
+            for (int i = 0; i < dataSetTopics.Tables[0].Rows.Count; i++)
+            {
+                if (dataSetTopics.Tables[0].Rows[i][1].ToString() == lbxTopics.Items[x].ToString())
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private int GetCurrentPosition(string topic)
+        {
+            for (int i = 0; i < lbxTopics.Items.Count; i++)
+            {
+                if (lbxTopics.Items[i].ToString() == topic)
+                {
+                    return i;
+                }
+            }
+           return -1;
         }
     }
 }

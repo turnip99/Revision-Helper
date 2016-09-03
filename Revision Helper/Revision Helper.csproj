@@ -65,6 +65,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddSubject.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddSubject.Designer.cs">
+      <DependentUpon>AddSubject.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddTopic.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,6 +123,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RevisionDatabaseDataSet1.xsd</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddSubject.resx">
+      <DependentUpon>AddSubject.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AddTopic.resx">
       <DependentUpon>AddTopic.cs</DependentUpon>
     </EmbeddedResource>

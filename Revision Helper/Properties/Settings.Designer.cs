@@ -51,5 +51,17 @@ namespace Revision_Helper.Properties {
                 return ((string)(this["RevisionDatabaseConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SELECT * FROM tblSubjects")]
+        public string SqlSelectFromtblSubjects {
+            get {
+                return ((string)(this["SqlSelectFromtblSubjects"]));
+            }
+            set {
+                this["SqlSelectFromtblSubjects"] = value;
+            }
+        }
     }
 }
