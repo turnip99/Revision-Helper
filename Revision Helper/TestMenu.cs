@@ -22,13 +22,18 @@ namespace Revision_Helper
         DataSet dataSetTopics;
         DataSet dataSetQuestions;
         DataSet dataSetSubjects;
-
+        ColouredCheckedListBox lbxTopics = new ColouredCheckedListBox();
         public TestMenu(int res)
         {
+            lbxTopics.Location = new Point(12, 12);
+            lbxTopics.Size = new Size(637, 949);
+            lbxTopics.Font = new Font("Times New Roman", 12);
+            lbxTopics.SelectedIndexChanged += new EventHandler(lbxTopics_SelectedIndexChanged);
+            Controls.Add(lbxTopics);
+            ActiveControl = lbxTopics;
             Res = res;
             InitializeComponent();
             InitialAdjust();
-            ActiveControl = lbxTopics;
             try
             {
                 objConnectTopics = new DatabaseConnection();
@@ -89,8 +94,11 @@ namespace Revision_Helper
                 speed += (int)dataSetTopics.Tables[0].Rows[i][7];
             }
             int populatedRows = 0;
+            lbxTopics.colours.Clear();
             for (int i = 0; i < dataSetTopics.Tables[0].Rows.Count; i++)
             {
+                int index = GetIndex(i);
+                lbxTopics.colours.Add(GetSkillColour(GetTopicSkill(index)));
                 if ((int)dataSetTopics.Tables[0].Rows[i][7] > 0)
                 {
                     populatedRows++;
@@ -133,7 +141,6 @@ namespace Revision_Helper
                 int incorrect;
                 int accuracy;
                 int speed;
-                int skill;
                 correct = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][5];
                 incorrect = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][6];
                 speed = (int)dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][7];
@@ -167,9 +174,33 @@ namespace Revision_Helper
             }
         }
 
+        private double GetTopicSkill(int index)
+        {
+            int total;
+            int correct;
+            int incorrect;
+            int accuracy;
+            int speed;
+            correct = (int)dataSetTopics.Tables[0].Rows[index][5];
+            incorrect = (int)dataSetTopics.Tables[0].Rows[index][6];
+            speed = (int)dataSetTopics.Tables[0].Rows[index][7];
+            total = correct + incorrect;
+            if (total > 0)
+            {
+                accuracy = correct * 100 / total;
+            }
+            else
+            {
+                accuracy = 0;
+            }
+            double spq = speed;
+            spq = Math.Round((spq /= 33), 2);
+            return CalculateSkill(accuracy, spq);
+        }
+
         private void AssignBackColoursOverall(int accuracy, double spq, int total)
         {
-            double skill = CalculateSkillOverall(accuracy, spq, total);
+            double skill = CalculateSkill(accuracy, spq);
             lblOverallAccuracy.BackColor = GetAcccuracyColour(accuracy);
             lblOverallSpeed.BackColor = GetSpeedColour(spq);
             lblOverallSkill.BackColor = GetSkillColour(skill);
@@ -178,53 +209,27 @@ namespace Revision_Helper
 
         private void AssignBackColoursTopic(int accuracy, double spq, int total)
         {
-            double skill = CalculateSkillTopic(accuracy, spq, total);
+            double skill = CalculateSkill(accuracy, spq);
             lblTopicAccuracy.BackColor = GetAcccuracyColour(accuracy);
             lblTopicSpeed.BackColor = GetSpeedColour(spq);
             lblTopicSkill.BackColor = GetSkillColour(skill);
             lblTopicSkill.Text = "Rank: " + GetSkillText(skill);
         }
 
-        private double CalculateSkillOverall(int accuracy, double spq, int total)
+        private double CalculateSkill(int accuracy, double spq)
         {
             if (accuracy == 0 || spq == 0)
             {
                 return 0;
             }
             double skill;
-            if (spq > 1.2)
+            if (spq > 3.6)
             {
                 skill = (accuracy / spq) * 2;
             }
             else
             {
-                skill = (accuracy / 1.2) * 2;
-            }
-            if (total < lbxTopics.Items.Count * 20)
-            {
-                skill -= (lbxTopics.Items.Count * 20 - total) / 2;
-            }
-            return Math.Round(skill, 3);
-        }
-
-        private double CalculateSkillTopic(int accuracy, double spq, int total)
-        {
-            if (accuracy == 0 || spq == 0)
-            {
-                return 0;
-            }
-            double skill;
-            if (spq > 1.2)
-            {
-                skill = (accuracy / spq) * 2;
-            }
-            else
-            {
-                skill = (accuracy / 1.2) * 2;
-            }
-            if (total < 20)
-            {
-                skill -= (20 - total) * 1.5;
+                skill = (accuracy / 3.6) * 2;
             }
             return Math.Round(skill, 3);
         }
@@ -267,31 +272,31 @@ namespace Revision_Helper
 
         private Color GetSpeedColour(double spq)
         {
-            if (spq > 5 || spq == 0)
+            if (spq > 15 || spq == 0)
             {
                 return Color.Red;
             }
-            else if (spq > 4.3)
+            else if (spq > 12.9)
             {
                 return Color.Tomato;
             }
-            else if (spq > 3.6)
+            else if (spq > 10.8)
             {
                 return Color.DarkOrange;
             }
-            else if (spq > 3)
+            else if (spq > 9)
             {
                 return Color.Orange;
             }
-            else if (spq > 2.5)
+            else if (spq > 7.5)
             {
                 return Color.Gold;
             }
-            else if (spq > 1.9)
+            else if (spq > 5.4)
             {
                 return Color.Yellow;
             }
-            else if (spq > 1.5)
+            else if (spq > 4.5)
             {
                 return Color.GreenYellow;
             }
@@ -303,31 +308,31 @@ namespace Revision_Helper
 
         private Color GetSkillColour(double skill)
         {
-            if (skill < 16)
+            if (skill < 5.3)
             {
                 return Color.Red;
             }
-            else if (skill < 27)
+            else if (skill < 9)
             {
                 return Color.Tomato;
             }
-            else if (skill < 37)
+            else if (skill < 12.7)
             {
                 return Color.DarkOrange;
             }
-            else if (skill < 51)
+            else if (skill < 16.9)
             {
                 return Color.Orange;
             }
-            else if (skill < 67)
+            else if (skill < 22.4)
             {
                 return Color.Gold;
             }
-            else if (skill < 97)
+            else if (skill < 34.1)
             {
                 return Color.Yellow;
             }
-            else if (skill < 132)
+            else if (skill < 44)
             {
                 return Color.GreenYellow;
             }
@@ -339,31 +344,31 @@ namespace Revision_Helper
 
         private string GetSkillText(double skill)
         {
-            if (skill < 16)
+            if (skill < 5.3)
             {
                 return "Abysmal";
             }
-            else if (skill < 27)
+            else if (skill < 9)
             {
                 return "Disappointment";
             }
-            else if (skill < 37)
+            else if (skill < 12.7)
             {
                 return "Shoddy";
             }
-            else if (skill < 51)
+            else if (skill < 16.9)
             {
                 return "Adept";
             }
-            else if (skill < 67)
+            else if (skill < 22.4)
             {
                 return "Commendable";
             }
-            else if (skill < 97)
+            else if (skill < 34.1)
             {
                 return "Skillful";
             }
-            else if (skill < 132)
+            else if (skill < 44)
             {
                 return "Professional";
             }
@@ -396,6 +401,7 @@ namespace Revision_Helper
                 picImage.Image = Base64StringToImage(dataSetTopics.Tables[0].Rows[GetIndex(lbxTopics.SelectedIndex)][4].ToString());
             }
         }
+
         private int maxQuestions()
         {
             int max = 0;

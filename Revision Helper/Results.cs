@@ -46,16 +46,14 @@ namespace Revision_Helper
                 return 0;
             }
             double skill;
-            if (spq > 1.2)
+            if (spq > 3.6)
             {
                 skill = (accuracy / spq) * 2;
             }
             else
             {
-                skill = (accuracy / 1.2) * 2;
+                skill = (accuracy / 3.6) * 2;
             }
-
-            skill -= 10;
             return Math.Round(skill, 3);
         }
 
@@ -97,31 +95,31 @@ namespace Revision_Helper
 
         private Color GetSpeedColour(double spq)
         {
-            if (spq > 5 || spq == 0)
+            if (spq > 15 || spq == 0)
             {
                 return Color.Red;
             }
-            else if (spq > 4.3)
+            else if (spq > 12.9)
             {
                 return Color.Tomato;
             }
-            else if (spq > 3.6)
+            else if (spq > 10.8)
             {
                 return Color.DarkOrange;
             }
-            else if (spq > 3)
+            else if (spq > 9)
             {
                 return Color.Orange;
             }
-            else if (spq > 2.5)
+            else if (spq > 7.5)
             {
                 return Color.Gold;
             }
-            else if (spq > 1.9)
+            else if (spq > 5.4)
             {
                 return Color.Yellow;
             }
-            else if (spq > 1.5)
+            else if (spq > 4.5)
             {
                 return Color.GreenYellow;
             }
@@ -133,31 +131,31 @@ namespace Revision_Helper
 
         private Color GetSkillColour(double skill)
         {
-            if (skill < 16)
+            if (skill < 5.3)
             {
                 return Color.Red;
             }
-            else if (skill < 27)
+            else if (skill < 9)
             {
                 return Color.Tomato;
             }
-            else if (skill < 37)
+            else if (skill < 12.7)
             {
                 return Color.DarkOrange;
             }
-            else if (skill < 51)
+            else if (skill < 16.9)
             {
                 return Color.Orange;
             }
-            else if (skill < 67)
+            else if (skill < 22.4)
             {
                 return Color.Gold;
             }
-            else if (skill < 97)
+            else if (skill < 34.1)
             {
                 return Color.Yellow;
             }
-            else if (skill < 132)
+            else if (skill < 44)
             {
                 return Color.GreenYellow;
             }
@@ -169,31 +167,31 @@ namespace Revision_Helper
 
         private string GetSkillText(double skill)
         {
-            if (skill < 16)
+            if (skill < 5.3)
             {
                 return "Abysmal";
             }
-            else if (skill < 27)
+            else if (skill < 9)
             {
                 return "Disappointment";
             }
-            else if (skill < 37)
+            else if (skill < 12.7)
             {
                 return "Shoddy";
             }
-            else if (skill < 51)
+            else if (skill < 16.9)
             {
                 return "Adept";
             }
-            else if (skill < 67)
+            else if (skill < 22.4)
             {
                 return "Commendable";
             }
-            else if (skill < 97)
+            else if (skill < 34.1)
             {
                 return "Skillful";
             }
-            else if (skill < 132)
+            else if (skill < 44)
             {
                 return "Professional";
             }

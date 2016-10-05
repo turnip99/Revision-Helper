@@ -21,19 +21,19 @@ namespace Revision_Helper
                 label[i].Font = new Font("Times New Roman", 11);
                 delete.Font = new Font("Times New Roman", 11);
                 text[i].Size = new Size(800, 40);
-                text[i].MaxLength = 55;
+                text[i].MaxLength = 75;
             }
             form.Controls.Add(delete);
             delete.Click += new EventHandler(delete_Changed);
             label[0].Text = "Question:";
             label[1].Text = "Answer:";
-            label[2].Text = "Inorrect:";
-            label[3].Text = "Inorrect:";
-            label[4].Text = "Inorrect:";
+            label[2].Text = "Incorrect:";
+            label[3].Text = "Incorrect:";
+            label[4].Text = "Incorrect:";
             delete.Text = "Keep";
             text[0].Size = new Size(1700, 40);
             delete.Size = new Size(100, 40);
-            text[0].MaxLength = 120;
+            text[0].MaxLength = 150;
             label[0].Location = new Point(15, spawnPosition);
             text[0].Location = new Point(95, spawnPosition);
             label[1].Location = new Point(15, spawnPosition + 50);
