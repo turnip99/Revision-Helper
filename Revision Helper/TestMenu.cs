@@ -127,7 +127,7 @@ namespace Revision_Helper
             lblOverallAccuracy.Text = "Accuracy: " + accuracy + "%";
             double spq = speed;
             spq = Math.Round((spq /= 33), 2);
-            lblOverallSpeed.Text = "Speed: " + spq + " SPQ";
+            lblOverallSpeed.Text = "Speed: " + spq + " S/Q";
             AssignBackColoursOverall(accuracy, spq, total);
         }
 
@@ -159,7 +159,7 @@ namespace Revision_Helper
                 lblTopicAccuracy.Text = "Accuracy: " + accuracy + "%";
                 double spq = speed;
                 spq = Math.Round((spq /= 33), 2);
-                lblTopicSpeed.Text = "Speed: " + spq + " SPQ";
+                lblTopicSpeed.Text = "Speed: " + spq + " S/Q";
                 AssignBackColoursTopic(accuracy, spq, total);
             }
             else
@@ -223,13 +223,17 @@ namespace Revision_Helper
                 return 0;
             }
             double skill;
-            if (spq > 3.6)
+            if (spq < 4.5)
             {
-                skill = (accuracy / spq) * 2;
+                skill = (accuracy / 4.5) * 2;
+            }
+            else if (spq > 18)
+            {
+                skill = (accuracy / 18) * 2;
             }
             else
             {
-                skill = (accuracy / 3.6) * 2;
+                skill = (accuracy / spq) * 2;
             }
             return Math.Round(skill, 3);
         }
@@ -256,11 +260,11 @@ namespace Revision_Helper
             {
                 return Color.Gold;
             }
-            else if (accuracy < 92)
+            else if (accuracy < 90)
             {
                 return Color.Yellow;
             }
-            else if (accuracy < 99)
+            else if (accuracy < 95)
             {
                 return Color.GreenYellow;
             }
@@ -276,27 +280,27 @@ namespace Revision_Helper
             {
                 return Color.Red;
             }
-            else if (spq > 12.9)
+            else if (spq > 13.3)
             {
                 return Color.Tomato;
             }
-            else if (spq > 10.8)
+            else if (spq > 11.6)
             {
                 return Color.DarkOrange;
             }
-            else if (spq > 9)
+            else if (spq > 10.2)
             {
                 return Color.Orange;
             }
-            else if (spq > 7.5)
+            else if (spq > 8.9)
             {
                 return Color.Gold;
             }
-            else if (spq > 5.4)
+            else if (spq > 7.8)
             {
                 return Color.Yellow;
             }
-            else if (spq > 4.5)
+            else if (spq > 5.9)
             {
                 return Color.GreenYellow;
             }
@@ -312,27 +316,27 @@ namespace Revision_Helper
             {
                 return Color.Red;
             }
-            else if (skill < 9)
+            else if (skill < 8.7)
             {
                 return Color.Tomato;
             }
-            else if (skill < 12.7)
+            else if (skill < 11.6)
             {
                 return Color.DarkOrange;
             }
-            else if (skill < 16.9)
+            else if (skill < 14.9)
             {
                 return Color.Orange;
             }
-            else if (skill < 22.4)
+            else if (skill < 18.9)
             {
                 return Color.Gold;
             }
-            else if (skill < 34.1)
+            else if (skill < 23.1)
             {
                 return Color.Yellow;
             }
-            else if (skill < 44)
+            else if (skill < 32.2)
             {
                 return Color.GreenYellow;
             }
@@ -348,27 +352,27 @@ namespace Revision_Helper
             {
                 return "Abysmal";
             }
-            else if (skill < 9)
+            else if (skill < 8.7)
             {
                 return "Disappointment";
             }
-            else if (skill < 12.7)
+            else if (skill < 11.6)
             {
                 return "Shoddy";
             }
-            else if (skill < 16.9)
+            else if (skill < 14.9)
             {
                 return "Adept";
             }
-            else if (skill < 22.4)
+            else if (skill < 18.9)
             {
                 return "Commendable";
             }
-            else if (skill < 34.1)
+            else if (skill < 23.1)
             {
                 return "Skillful";
             }
-            else if (skill < 44)
+            else if (skill < 32.2)
             {
                 return "Professional";
             }
